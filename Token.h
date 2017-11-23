@@ -26,8 +26,8 @@ class Token {
     }
     bool isOpenParen();
     bool isUnaryOperator();
-    int getPrecedence();
-    void setPrecedence(); 
+    int getOperPrecedence();
+    // void setPrecedence();
   };
   class TokenDig : public Token {
   protected:
@@ -88,9 +88,9 @@ class Token {
     const int getPrecedence() const {
       return precedence;
     }
-    void setPrecedence(int precedenceInput) {
-      precedence = precedenceInput;
-        }
+    // void setPrecedence(int precedenceInput) {
+    //   precedence = precedenceInput;
+    //     }
     void setValue(string valueInput) {
       value = valueInput;
         }
@@ -125,7 +125,7 @@ class TokenEquation {
       TokenEquation();
       ~TokenEquation();
       bool tokenize(string expres);
-      void prefix();
+      bool postfix();
       const void print() const;
       const vector<Token*> getTokenEquation() const{
         return tokens;
@@ -133,6 +133,7 @@ class TokenEquation {
       const int getLength() const {
         return length;
       }
+      void removeUnary();
 };
 
 #endif

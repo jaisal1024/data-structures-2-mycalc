@@ -19,6 +19,21 @@ bool Token::isUnaryOperator() {
   }
   return checkOpen;
 }
+int Token::getOperPrecedence() {
+  int prec = -1;
+  if (this->type == "oper") { //cast to TokenParen to determine if the previous token is an open paranthesis)
+    TokenOper* temp = dynamic_cast<TokenOper*>(this);
+     prec = temp->getPrecedence();
+  }
+  return prec;
+}
+// void Token::setPrecedence() {
+//   if (this->type == "oper") { //cast to TokenParen to determine if the previous token is an open paranthesis)
+//     TokenOper* temp = dynamic_cast<TokenOper*>(this);
+//     if (temp->isUnary())
+//       checkOpen = true;
+//   }
+// }
 
 TokenEquation::TokenEquation(){
   vector<Token*> tokenInput;
@@ -58,7 +73,7 @@ bool TokenEquation::tokenize(string expres) {
       }
       if (identifier == "mod") {
         if (i!=0) {
-          tokens.push_back(new TokenOper("mod", false));
+          tokens.push_back(new TokenOper("mod", false, 2));
           i++; continue;
         } else {
           //throw exception - operator at start of method
@@ -78,14 +93,14 @@ bool TokenEquation::tokenize(string expres) {
       i+=j; continue;
     } else if (i == 0) {
       if ((character[i] == '+' && character[i+1] == '+') || (character [i] == '*' && character[i+1] == '*')) {
-        tokens.push_back(new TokenOper(expres.substr(i,2), true));
+        tokens.push_back(new TokenOper(expres.substr(i,2), true, 3));
         i=i+2; continue;
       } else if (character[i] == '-') {
         if (character[i+1] == '-'){
-          tokens.push_back(new TokenOper(expres.substr(i,2), true));
+          tokens.push_back(new TokenOper(expres.substr(i,2), true, 3));
           i=i+2; continue;
         }
-        tokens.push_back(new TokenOper(expres.substr(i,1), true));
+        tokens.push_back(new TokenOper(expres.substr(i,1), true, 3));
         i++; continue;
       }
       //throw first character exception error
@@ -94,38 +109,38 @@ bool TokenEquation::tokenize(string expres) {
       bool checkOpen = tokens.at(tokens.size()-1)->isOpenParen();
       if (tokens.at(tokens.size()-1)->getType() == "oper" || (checkOpen)) { //We are only looking for unary operators now
         if ((character[i] == '+' && character[i+1] == '+') || (character [i] == '*' && character[i+1] == '*') || (character [i] == '-' && character[i+1] == '-')) {
-          tokens.push_back(new TokenOper(expres.substr(i,2), true));
+          tokens.push_back(new TokenOper(expres.substr(i,2), true, 3));
           i+=2; continue;
         } else if (character[i] == '-') {
-          tokens.push_back(new TokenOper(expres.substr(i,1), true));
+          tokens.push_back(new TokenOper(expres.substr(i,1), true, 3));
           i++; continue;
         } else {
           //throw invalid operator in expression
           return false;
         }
       } else if (character[i] == '%' || character[i] == '/') {
-        tokens.push_back(new TokenOper(expres.substr(i,1), false));
+        tokens.push_back(new TokenOper(expres.substr(i,1), false, 2));
         i++; continue;
       } else if (character[i] == '*') {
         if (character[i+1] == '*'){
-          tokens.push_back(new TokenOper(expres.substr(i,2), true));
+          tokens.push_back(new TokenOper(expres.substr(i,2), true, 3));
           i=i+2; continue;
         }
-        tokens.push_back(new TokenOper(expres.substr(i,1), false));
+        tokens.push_back(new TokenOper(expres.substr(i,1), false, 2));
         i++; continue;
       } else if (character[i] == '+') {
         if (character[i+1] == '+'){
-          tokens.push_back(new TokenOper(expres.substr(i,2), true));
+          tokens.push_back(new TokenOper(expres.substr(i,2), true, 3));
           i=i+2; continue;
         }
-        tokens.push_back(new TokenOper(expres.substr(i,1), false));
+        tokens.push_back(new TokenOper(expres.substr(i,1), false, 1));
         i++; continue;
       } else if (character[i] == '-') {
         if (character[i+1] == '-'){
-          tokens.push_back(new TokenOper(expres.substr(i,2), true));
+          tokens.push_back(new TokenOper(expres.substr(i,2), true, 3));
           i=i+2; continue;
         }
-        tokens.push_back(new TokenOper(expres.substr(i,1), false));
+        tokens.push_back(new TokenOper(expres.substr(i,1), false, 1));
         i++; continue;
       }
       //throw invalid token at i error
@@ -138,23 +153,94 @@ bool TokenEquation::tokenize(string expres) {
   return true;
 
 }
-void TokenEquation::prefix(){
+
+void TokenEquation::removeUnary(){
+  vector<Token*>::iterator i;
+  for (i = tokens.begin(); i < tokens.end(); i++) {
+    if ((*i)->getType() == "oper") {
+      if ((*i)->isUnaryOperator()) {
+        if ((*i)->getValue() == "**") {
+          if ((*(i+1))->getType() == "paren" && (*(i+1))->isOpenParen()) {
+            int j = 1;
+            bool found = false;
+            while(((i+j) < tokens.end()) && !found) {
+              if ((*(i+j))->getType() == "paren" && !(*(i+j))->isOpenParen()) {
+                //tokens.erase(i);
+                //tokens.insert(i+j,new TokenDig("2"));
+                //tokens.insert(i+j,new TokenOper("^", false, 4));
+                //continue;
+              }
+              j++;
+            }
+          } else {
+            tokens.erase(i);
+            tokens.insert(i,new TokenOper("^", false, 4));
+            tokens.insert(i,new TokenDig("2"));
+          }
+
+        } else if ((*i)->getValue() == "++") {
+          tokens.erase(i);
+          tokens.insert(i,new TokenOper("+", false, 1));
+          tokens.insert(i,new TokenDig("1"));
+
+        } else if ((*i)->getValue() == "--") {
+          tokens.erase(i);
+          tokens.insert(i,new TokenOper("-", false, 1));
+          tokens.insert(i,new TokenDig("1"));
+        } else { //it's a negatation value
+          tokens.erase(i);
+          tokens.insert(i,new TokenOper("*", false, 2));
+          tokens.insert(i,new TokenDig("-1"));
+        }
+      }
+    }
+  }
+}
+bool TokenEquation::postfix(){
   vector<Token*> tokensOutput;
   stack<Token*> operationStack;
   for (int i = 0; i < tokens.size(); i++) {
-    if (tokens.at(i)->getType == "dig" || tokens.at(i)->getType == "var") {
-      operationStack.push_back(tokens.at(i));
-    } else if (tokens.at(i)->getType == "oper") {
-      while ()
-    } else if (tokens.at(i)->getType == "paren") {
-      if (tokens.at(i).isOpenParen()) { //open paranthesis
-      } else { //closed paranthesis
+    if (tokens.at(i)->getType() == "dig" || tokens.at(i)->getType() == "var") {
+      tokensOutput.push_back(tokens.at(i));
+      continue;
+    } else if (tokens.at(i)->getType() == "oper") {
+      while (!operationStack.empty() && !operationStack.top()->isUnaryOperator() && (operationStack.top()->getOperPrecedence() >= tokens.at(i)->getOperPrecedence())) {
+          tokensOutput.push_back(operationStack.top());
+          operationStack.pop();
       }
-
+      operationStack.push(tokens.at(i));
+      continue;
+    } else if (tokens.at(i)->getType() == "paren") {
+      if (tokens.at(i)->isOpenParen()) { //open paranthesis
+        operationStack.push(tokens.at(i));
+      } else { //closed paranthesis
+        bool found = false;
+        while (!operationStack.empty() && operationStack.top()->getType()== "paren" && operationStack.top()->isOpenParen()) {
+            found = true;
+            operationStack.pop();
+        }
+        if (found) {
+          operationStack.pop();
+          continue;
+        } //else
+        //throw mismatch paranthesis exception
+        return false;
+      }
     } else {
-
+      //throw exception shouldn't exist!! another check...
+      return false;
     }
   }
+  while (!operationStack.empty()) {
+    if (operationStack.top()->getType() == "paren") {
+      //throw mismatch paranthesis exception
+      return false;
+    }
+    tokensOutput.push_back(operationStack.top());
+    operationStack.pop();
+  }
+  tokens = tokensOutput;
+  return true;
 
 }
 const void TokenEquation::print() const {

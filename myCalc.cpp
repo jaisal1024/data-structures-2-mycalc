@@ -79,8 +79,13 @@ void parseList(vector<ListNode> & list) {
   try {
     for (int i= 0; i < list.size(); i++) {
       TokenEquation eq = TokenEquation();
-      if (eq.tokenize(list.at(i).expres))
+      if (eq.tokenize(list.at(i).expres)) {
+        eq.removeUnary();
         eq.print();
+        if (eq.postfix()) {
+          eq.print();
+        }
+      }
       else
         cout << "there's an error in: " << list.at(i).expres << endl;
     }

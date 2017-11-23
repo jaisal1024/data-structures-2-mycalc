@@ -9,7 +9,7 @@
 
 using namespace std;
 
-typedef string Elem;					// base element type
+typedef Token* Elem;					// base element type
 
 class BinaryTree {
   protected:
