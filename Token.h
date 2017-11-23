@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <vector>
 #include <iostream>
+#include "HelperLibrary.h"
 
 using namespace std;
 
@@ -18,13 +19,14 @@ class Token {
       type = typeInput;
     }
     virtual ~Token(){}
-    const virtual string getValue() const {};
-    const virtual bool isOpen() const {};
-    const virtual bool isUnary() const {};
+    const virtual string getValue() const {return "";};
     const string getType() const {
       return type;
     }
+    bool isOpenParen();
+    bool isUnaryOperator();
     friend class TokenEquation;
+
   };
   class TokenDig : public Token {
   protected:
@@ -35,7 +37,6 @@ class Token {
       type = "dig";
       value = valueInput;
     }
-    // virtual ~TokenDig(){};
     const virtual string getValue() const {
       return value;
     }
@@ -73,7 +74,7 @@ class Token {
     const virtual string getValue() const {
       return value;
     }
-    const virtual bool isUnary() const {
+    const bool isUnary() const {
       return isUnaryOperator;
     }
     void setValue(string valueInput) {
@@ -94,7 +95,7 @@ class Token {
       else
         value = ")";
     }
-    const virtual bool isOpen() const {
+    const bool isOpen() const {
       return openParen;
     }
     const virtual string getValue() const {
@@ -104,14 +105,15 @@ class Token {
 
 class TokenEquation {
     private:
-      vector<Token>* tokens;
+      vector<Token*> tokens;
       int length;
     public:
       TokenEquation();
+      ~TokenEquation();
       bool tokenize(string expres);
       void prefix();
       const void print() const;
-      const vector<Token>* getTokenEquation() const{
+      const vector<Token*> getTokenEquation() const{
         return tokens;
       }
       const int getLength() const {
