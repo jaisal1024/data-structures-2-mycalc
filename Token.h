@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include "HelperLibrary.h"
+#include <stack>
 
 using namespace std;
 
@@ -18,15 +19,15 @@ class Token {
     Token(string typeInput) {
       type = typeInput;
     }
-    virtual ~Token(){}
+    virtual ~Token(){};
     const virtual string getValue() const {return "";};
     const string getType() const {
       return type;
     }
     bool isOpenParen();
     bool isUnaryOperator();
-    friend class TokenEquation;
-
+    int getPrecedence();
+    void setPrecedence(); 
   };
   class TokenDig : public Token {
   protected:
@@ -65,11 +66,18 @@ class Token {
     string type;
     string value;
     bool isUnaryOperator;
+    int precedence;
   public:
     TokenOper(string valueInput, bool isUnaryInput) : Token("oper") {
       type = "oper";
       value = valueInput;
       isUnaryOperator = isUnaryInput;
+    }
+    TokenOper(string valueInput, bool isUnaryInput, int precedenceInput) : Token("oper") {
+      type = "oper";
+      value = valueInput;
+      isUnaryOperator = isUnaryInput;
+      precedence = precedenceInput;
     }
     const virtual string getValue() const {
       return value;
@@ -77,6 +85,12 @@ class Token {
     const bool isUnary() const {
       return isUnaryOperator;
     }
+    const int getPrecedence() const {
+      return precedence;
+    }
+    void setPrecedence(int precedenceInput) {
+      precedence = precedenceInput;
+        }
     void setValue(string valueInput) {
       value = valueInput;
         }

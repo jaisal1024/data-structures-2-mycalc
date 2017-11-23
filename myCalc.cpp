@@ -77,10 +77,14 @@ void readFile(const char* filePath, vector<ListNode> & list) {
 
 void parseList(vector<ListNode> & list) {
   try {
-    TokenEquation eq = TokenEquation();
-    //cout << list.at(0).expres.size() << endl;
-    eq.tokenize(list.at(0).expres);
-    eq.print();
+    for (int i= 0; i < list.size(); i++) {
+      TokenEquation eq = TokenEquation();
+      if (eq.tokenize(list.at(i).expres))
+        eq.print();
+      else
+        cout << "there's an error in: " << list.at(i).expres << endl;
+    }
+  ;
   }
   catch (...){
 
