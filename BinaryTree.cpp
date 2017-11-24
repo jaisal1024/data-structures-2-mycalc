@@ -1,36 +1,45 @@
 #include <cstdlib>
 #include <iostream>
+#include <cmath>
+#include <sstream>
 using namespace std;
 
 #include "BinaryTree.h"
 
+
 BinaryTree::BinaryTree()			// constructor
     : rootObj(NULL), n(0) { }
 
-bool BinaryTree::construct(TokenEquation & eq) {  //construct tree from postfix expression
-  stack<Position> st;
-  for (int i = 0; i < eq.getLength(); i++) {
-    if (eq.at(i)->getType() == "var" || eq.at(i)->getType() == "dig") {  // is an operand
-      st.push(Node(eq.at(i)));
 
-    } else if (eq.at(i)->getType() == "oper") {
-        Node(eq.at(i)) n;
-        Node t1 = st.top(); // Store top
+bool BinaryTree::construct(TokenEquation & eq) {  //construct tree from postfix expression
+  stack<Node*> st;
+  for (int i = 0; i < eq.getLength(); i++) {
+    ++n;
+    if (eq.getToken(i)->getType() == "var" || eq.getToken(i)->getType() == "dig") {  // is an operand
+      st.push(new BinaryTree::Node(*eq.getToken(i)));
+
+    } else if (eq.getToken(i)->getType() == "oper") {
+        Node* ptr;
+        Node node(*eq.getToken(i));
+        ptr = &node;
+        Node* t1 = st.top(); // Store top
         st.pop();      // Remove top
-        Node t2 = st.top();
+        Node* t2 = st.top();
         st.pop();
 
-        pos.right =t1;
-        pos.left = t2;
-        st.push(Node(pos));
+        node.right =t1;
+        node.left = t2;
+        // delete t1;
+        // delete t2;
+        st.push(ptr);
 
     } else
     //throw error
     return false;
   }
-  rootObj = &st.top();
+  rootObj = st.top();
   st.pop();
-  roo
+
   return true;
 }
 int BinaryTree::size() const			// number of nodes
@@ -39,8 +48,8 @@ int BinaryTree::size() const			// number of nodes
 bool BinaryTree::empty() const			// is tree empty?
     { return size() == 0; }
 
-BinaryTree::Position BinaryTree::root() const // get the root
-    { return Position(rootObj); }
+BinaryTree::Node* BinaryTree::root() const // get the root
+    { return rootObj; }
 
 void BinaryTree::addRoot(Token* token){ // add root to empty tree
       rootObj = new Node(*token);
@@ -56,9 +65,13 @@ double BinaryTree::evaluateOperation(double v1, double v2, string oper) {
   if (oper == "/")
     return v1/v2;
   if (oper == "^")
-    return v1^v2;
-  if (oper == "mod")
-    return v1%v2;
+    return pow(v1, v2);
+  if (oper == "mod") {
+    int v1temp = int(v1);
+    int v2temp = int(v2);
+    double sol = v2temp%v1temp;
+    return sol;
+  }
   if (oper == "%"){
     int v1temp = int(v1);
     int v2temp = int(v2);
@@ -69,12 +82,24 @@ double BinaryTree::evaluateOperation(double v1, double v2, string oper) {
   return 0;
 }
 
-double BinaryTree::evaluatePostOrder(Node* v) const {
-  double leftValue, rightValue;
+double BinaryTree::evaluate(Node* v) {
+  double leftVal, rightVal;
+  if (size() == 0){
+    return 0.000000000;
+    //throw empty tree error
+  } else if (v->left == NULL && v->right == NULL) { //is a leaf node
+    cout << "THE OTHER SIDE" << endl;
+    if ((*v).elt.getType() == "dig") { //ensure its a digit
+      double temp;
+      istringstream((*v).elt.getValue()) >> temp;
+      return temp;
+    }
+  } else {
   if (v->left != NULL)					// traverse left subtree
-    leftValue = evaluatePostOrder(v->left);
+    leftVal = evaluate(v->left);
   if (v->right != NULL)					// traverse right subtree
-    rightValue =evaluatePostOrder(v->right);
-    return
-  return evaluateOperation(leftValue, rightValue, (*v).elt.getValue());
+    rightVal = evaluate(v->right);
+  double val = evaluateOperation(leftVal, rightVal, (*v).elt.getValue());
+  return val;
+  }
 }

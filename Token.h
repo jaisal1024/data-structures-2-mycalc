@@ -15,33 +15,41 @@ using namespace std;
 class Token {
   protected:
     string type;
+    string value;
   public:
-    Token(string typeInput) {
+    Token(string typeInput, string valueInput) {
       type = typeInput;
+      value = valueInput;
     }
     virtual ~Token(){};
-    const virtual string getValue() const {return "";};
+    const string getValue() const {
+      return value;
+    }
     const string getType() const {
       return type;
+    }
+    const virtual void setValue(string valueInput) {};
+    const void setType(string typeInput) {
+      type = typeInput;
     }
     bool isOpenParen();
     bool isUnaryOperator();
     int getOperPrecedence();
-    // void setPrecedence();
+    string getVarValue();
   };
   class TokenDig : public Token {
   protected:
     string type;
     string value;
   public:
-    TokenDig(string valueInput) : Token("dig") {
+    TokenDig(string valueInput) : Token("dig", valueInput) {
       type = "dig";
       value = valueInput;
     }
     const virtual string getValue() const {
       return value;
     }
-    void setValue(int valueInput) {
+     const virtual void setValue(string valueInput) {
       value = valueInput;
         }
   };
@@ -50,14 +58,17 @@ class Token {
     string type;
     string value;
   public:
-    TokenVar(string valueInput) : Token("var") {
+    TokenVar(string valueInput) : Token("var", valueInput) {
       type = "var";
       value = valueInput;
     }
     const virtual string getValue() const {
       return value;
     }
-    void setValue(string valueInput) {
+    string getVariableValue() {
+      return value;
+    }
+    const void setValue(string valueInput){
       value = valueInput;
         }
   };
@@ -68,12 +79,12 @@ class Token {
     bool isUnaryOperator;
     int precedence;
   public:
-    TokenOper(string valueInput, bool isUnaryInput) : Token("oper") {
+    TokenOper(string valueInput, bool isUnaryInput) : Token("oper", valueInput) {
       type = "oper";
       value = valueInput;
       isUnaryOperator = isUnaryInput;
     }
-    TokenOper(string valueInput, bool isUnaryInput, int precedenceInput) : Token("oper") {
+    TokenOper(string valueInput, bool isUnaryInput, int precedenceInput) : Token("oper", valueInput) {
       type = "oper";
       value = valueInput;
       isUnaryOperator = isUnaryInput;
@@ -91,7 +102,7 @@ class Token {
     // void setPrecedence(int precedenceInput) {
     //   precedence = precedenceInput;
     //     }
-    void setValue(string valueInput) {
+    const virtual void setValue(string valueInput) {
       value = valueInput;
         }
   };
@@ -101,7 +112,7 @@ class Token {
     string value;
     bool openParen;
   public:
-    TokenParen(bool openParenInput) : Token("paren") {
+    TokenParen(bool openParenInput, string valueInput) : Token("paren", valueInput ) {
       type = "paren";
       openParen = openParenInput;
       if (openParen)
@@ -115,6 +126,9 @@ class Token {
     const virtual string getValue() const {
       return value;
     }
+    const virtual void setValue(string valueInput) {
+     value = valueInput;
+       }
   };
 
 class TokenEquation {
@@ -129,10 +143,12 @@ class TokenEquation {
       const vector<Token*> getTokenEquation() const{
         return tokens;
       }
+      Token* getToken(int i);
       const int getLength() const {
         return tokens.size();
       }
       void removeUnary();
+      void replace(int i);
 };
 
 #endif

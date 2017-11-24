@@ -21,24 +21,24 @@ bool Token::isUnaryOperator() {
 }
 int Token::getOperPrecedence() {
   int prec = -1;
-  if (this->type == "oper") { //cast to TokenParen to determine if the previous token is an open paranthesis)
+  if (this->type == "oper") { //cast to
     TokenOper* temp = dynamic_cast<TokenOper*>(this);
      prec = temp->getPrecedence();
   }
   return prec;
 }
-// void Token::setPrecedence() {
-//   if (this->type == "oper") { //cast to TokenParen to determine if the previous token is an open paranthesis)
-//     TokenOper* temp = dynamic_cast<TokenOper*>(this);
-//     if (temp->isUnary())
-//       checkOpen = true;
-//   }
-// }
+string Token::getVarValue() {
+  string val;
+  if (this->type == "var") { //cast to
+    TokenVar* temp = dynamic_cast<TokenVar*>(this);
+    val = temp->getVariableValue();
+  }
+  return val;
+}
 
 TokenEquation::TokenEquation(){
   vector<Token*> tokenInput;
   tokens = tokenInput;
-  length = 0;
 }
 TokenEquation::~TokenEquation() {
   for (vector<Token*>::iterator it = tokens.begin(); it != tokens.end(); it++) {
@@ -60,10 +60,10 @@ bool TokenEquation::tokenize(string expres) {
     if (character[i] == ' ') {
       i=i+1; continue;
     } else if (character[i] == '(' ){
-      tokens.push_back(new TokenParen(true));
+      tokens.push_back(new TokenParen(true, "("));
       i++; continue;
     } else if (character[i] == ')') {
-      tokens.push_back(new TokenParen(false));
+      tokens.push_back(new TokenParen(false, ")"));
       i++; continue;
     } else if (isalpha(character[i])) {
       int j = 1;
@@ -81,8 +81,7 @@ bool TokenEquation::tokenize(string expres) {
         }
       }
       tokens.push_back(new TokenVar(identifier));
-      i++;
-      continue;
+      i++; continue;
     } else if (isdigit(character[i])) {
       int j = 1;
       string digits = expres.substr(i, j);
@@ -199,7 +198,7 @@ void TokenEquation::removeUnary(){
         }
       } i++; continue;
     } i++; continue;
-  } 
+  }
 }
 bool TokenEquation::postfix(){
   vector<Token*> tokensOutput;
@@ -258,3 +257,11 @@ const void TokenEquation::print() const {
   }
   cout << endl;
 }
+ Token* TokenEquation::getToken(int i) {
+  return tokens.at(i);
+}
+// void TokenEquation::replace(int i, Token* tokenInput) {
+//   Token* temp = tokens.at(i);
+//   tokens.at(i) = tokenInput;
+//   delete temp;
+// }

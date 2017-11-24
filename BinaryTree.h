@@ -23,13 +23,15 @@ class BinaryTree {
     BinaryTree();					// constructor
     int size() const;					// number of nodes
     bool empty() const;					// is tree empty?
-    Node root() const;				// get the root
-    void addRoot();					// add root to empty tree
+    Node* root() const;				// get the root
+    void addRoot(Token* token);					// add root to empty tree
     bool construct(TokenEquation & eq);
-    double evaluatePostOrder(Node* v) const;	// evaluate function
+    bool isEvaluated();
+    double evaluateOperation(double v1, double v2, string val);
+    double evaluate(Node* v);	// evaluate function
   private:
     Node* rootObj;					// pointer to the root
-    int n;						// number of nodes
+    int n;	                // number of nodes
   };
 
   #endif
