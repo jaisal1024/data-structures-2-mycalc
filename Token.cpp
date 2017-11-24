@@ -156,7 +156,8 @@ bool TokenEquation::tokenize(string expres) {
 
 void TokenEquation::removeUnary(){
   vector<Token*>::iterator i;
-  for (i = tokens.begin(); i < tokens.end(); i++) {
+  i = tokens.begin();
+  while (i < tokens.end()) {
     if ((*i)->getType() == "oper") {
       if ((*i)->isUnaryOperator()) {
         if ((*i)->getValue() == "**") {
@@ -165,10 +166,10 @@ void TokenEquation::removeUnary(){
             bool found = false;
             while(((i+j) < tokens.end()) && !found) {
               if ((*(i+j))->getType() == "paren" && !(*(i+j))->isOpenParen()) {
-                //tokens.erase(i);
-                //tokens.insert(i+j,new TokenDig("2"));
-                //tokens.insert(i+j,new TokenOper("^", false, 4));
-                //continue;
+                tokens.erase(i);
+                tokens.insert(i+j,new TokenDig("2"));
+                tokens.insert(i+j,new TokenOper("^", false, 4));
+                i++; continue;
               }
               j++;
             }
@@ -176,25 +177,29 @@ void TokenEquation::removeUnary(){
             tokens.erase(i);
             tokens.insert(i,new TokenOper("^", false, 4));
             tokens.insert(i,new TokenDig("2"));
+            i+=2; continue;
           }
 
         } else if ((*i)->getValue() == "++") {
           tokens.erase(i);
           tokens.insert(i,new TokenOper("+", false, 1));
           tokens.insert(i,new TokenDig("1"));
+          i+=2; continue;
 
         } else if ((*i)->getValue() == "--") {
           tokens.erase(i);
           tokens.insert(i,new TokenOper("-", false, 1));
           tokens.insert(i,new TokenDig("1"));
+          i+=2; continue;
         } else { //it's a negatation value
           tokens.erase(i);
           tokens.insert(i,new TokenOper("*", false, 2));
           tokens.insert(i,new TokenDig("-1"));
+          i+=2; continue;
         }
-      }
-    }
-  }
+      } i++; continue;
+    } i++; continue;
+  } 
 }
 bool TokenEquation::postfix(){
   vector<Token*> tokensOutput;
@@ -215,14 +220,17 @@ bool TokenEquation::postfix(){
         operationStack.push(tokens.at(i));
       } else { //closed paranthesis
         bool found = false;
-        while (!operationStack.empty() && operationStack.top()->getType()== "paren" && operationStack.top()->isOpenParen()) {
-            found = true;
+        while (!operationStack.empty() && !found) {
+            if (operationStack.top()->getType()== "paren" && operationStack.top()->isOpenParen()) {
+              found = true;
+              operationStack.pop();
+              break;
+            }
+            tokensOutput.push_back(operationStack.top());
             operationStack.pop();
+
         }
-        if (found) {
-          operationStack.pop();
-          continue;
-        } //else
+        continue;  //else
         //throw mismatch paranthesis exception
         return false;
       }

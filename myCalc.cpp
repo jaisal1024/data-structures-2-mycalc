@@ -84,9 +84,10 @@ void parseList(vector<ListNode> & list) {
         eq.print();
         if (eq.postfix()) {
           eq.print();
+          list.tree.construct(eq);
         }
-      }
-      else
+
+      } else
         cout << "there's an error in: " << list.at(i).expres << endl;
     }
   ;

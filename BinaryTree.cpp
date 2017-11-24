@@ -7,6 +7,10 @@ using namespace std;
 BinaryTree::BinaryTree()			// constructor
     : _root(NULL), n(0) { }
 
+bool BinaryTree::construct(TokenEquation & eq) {  //construct tree from postfix expression
+
+}
+
 int BinaryTree::size() const			// number of nodes
     { return n; }
 
@@ -28,8 +32,8 @@ void BinaryTree::expandExternal(const Position& p) {
     n += 2;						// two more nodes
 }
 
-BinaryTree::Position				// remove p and parent
-BinaryTree::removeAboveExternal(const Position& p) {
+			// remove p and parent
+BinaryTree::Position BinaryTree::removeAboveExternal(const Position& p) {
     Node* w = p.v;  Node* v = w->par;		// get p's node and parent
     Node* sib = (w == v->left ?  v->right : v->left);
     if (v == _root) {					// child of root?
@@ -47,16 +51,21 @@ BinaryTree::removeAboveExternal(const Position& p) {
     return Position(sib);
 }
 
-BinaryTree::PositionList BinaryTree::positions() const {
-  PositionList pl;
-  preorder(_root, pl);					// preorder traversal
-  return PositionList(pl);				// return resulting list
-}
+// BinaryTree::PositionList BinaryTree::positions() const {
+//   PositionList pl;
+//   preorder(_root, pl);					// preorder traversal
+//   return PositionList(pl);				// return resulting list
+// }
 							// preorder traversal
-void BinaryTree::preorder(Node* v, PositionList& pl) const {
+double BinaryTree::evaluatePostOrder(Node* v, PositionList& pl) const {
   pl.push_back(Position(v));				// add this node
+  double value;
   if (v->left != NULL)					// traverse left subtree
-    preorder(v->left, pl);
+    value+= evaluatePostOrder(v->left, pl);
   if (v->right != NULL)					// traverse right subtree
-    preorder(v->right, pl);
+    value+=evaluatePostOrder(v->right, pl);
+  else {
+
+  }
+  return value;
 }

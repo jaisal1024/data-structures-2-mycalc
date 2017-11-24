@@ -46,6 +46,7 @@ class BinaryTree {
 
   public:
     BinaryTree();					// constructor
+    bool construct(TokenEquation & eq);
     int size() const;					// number of nodes
     bool empty() const;					// is tree empty?
     Position root() const;				// get the root
@@ -53,9 +54,7 @@ class BinaryTree {
     void addRoot();					// add root to empty tree
     void expandExternal(const Position& p);		// expand external node
     Position removeAboveExternal(const Position& p);	// remove p and parent
-    // housekeeping functions omitted...
-  protected: 						// local utilities
-    void preorder(Node* v, PositionList& pl) const;	// preorder utility
+    double evaluatePostOrder(Node* v, PositionList& pl) const;	// evaluate function
   private:
     Node* _root;					// pointer to the root
     int n;						// number of nodes
