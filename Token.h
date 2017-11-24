@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <vector>
 #include <iostream>
+#include "HelperLibrary.h"
+#include <stack>
 
 using namespace std;
 
@@ -13,33 +15,41 @@ using namespace std;
 class Token {
   protected:
     string type;
+    string value;
   public:
-    Token(string typeInput) {
+    Token(string typeInput, string valueInput) {
       type = typeInput;
+      value = valueInput;
     }
-    virtual ~Token(){}
-    const virtual string getValue() const {};
-    const virtual bool isOpen() const {};
-    const virtual bool isUnary() const {};
+    virtual ~Token(){};
+    const string getValue() const {
+      return value;
+    }
     const string getType() const {
       return type;
     }
-    friend class TokenEquation;
+    const virtual void setValue(string valueInput) {};
+    const void setType(string typeInput) {
+      type = typeInput;
+    }
+    bool isOpenParen();
+    bool isUnaryOperator();
+    int getOperPrecedence();
+    string getVarValue();
   };
   class TokenDig : public Token {
   protected:
     string type;
     string value;
   public:
-    TokenDig(string valueInput) : Token("dig") {
+    TokenDig(string valueInput) : Token("dig", valueInput) {
       type = "dig";
       value = valueInput;
     }
-    // virtual ~TokenDig(){};
     const virtual string getValue() const {
       return value;
     }
-    void setValue(int valueInput) {
+     const virtual void setValue(string valueInput) {
       value = valueInput;
         }
   };
@@ -48,14 +58,17 @@ class Token {
     string type;
     string value;
   public:
-    TokenVar(string valueInput) : Token("var") {
+    TokenVar(string valueInput) : Token("var", valueInput) {
       type = "var";
       value = valueInput;
     }
     const virtual string getValue() const {
       return value;
     }
-    void setValue(string valueInput) {
+    string getVariableValue() {
+      return value;
+    }
+    const void setValue(string valueInput){
       value = valueInput;
         }
   };
@@ -64,19 +77,32 @@ class Token {
     string type;
     string value;
     bool isUnaryOperator;
+    int precedence;
   public:
-    TokenOper(string valueInput, bool isUnaryInput) : Token("oper") {
+    TokenOper(string valueInput, bool isUnaryInput) : Token("oper", valueInput) {
       type = "oper";
       value = valueInput;
       isUnaryOperator = isUnaryInput;
     }
+    TokenOper(string valueInput, bool isUnaryInput, int precedenceInput) : Token("oper", valueInput) {
+      type = "oper";
+      value = valueInput;
+      isUnaryOperator = isUnaryInput;
+      precedence = precedenceInput;
+    }
     const virtual string getValue() const {
       return value;
     }
-    const virtual bool isUnary() const {
+    const bool isUnary() const {
       return isUnaryOperator;
     }
-    void setValue(string valueInput) {
+    const int getPrecedence() const {
+      return precedence;
+    }
+    // void setPrecedence(int precedenceInput) {
+    //   precedence = precedenceInput;
+    //     }
+    const virtual void setValue(string valueInput) {
       value = valueInput;
         }
   };
@@ -86,7 +112,7 @@ class Token {
     string value;
     bool openParen;
   public:
-    TokenParen(bool openParenInput) : Token("paren") {
+    TokenParen(bool openParenInput, string valueInput) : Token("paren", valueInput ) {
       type = "paren";
       openParen = openParenInput;
       if (openParen)
@@ -94,29 +120,35 @@ class Token {
       else
         value = ")";
     }
-    const virtual bool isOpen() const {
+    const bool isOpen() const {
       return openParen;
     }
     const virtual string getValue() const {
       return value;
     }
+    const virtual void setValue(string valueInput) {
+     value = valueInput;
+       }
   };
 
 class TokenEquation {
     private:
-      vector<Token>* tokens;
-      int length;
+      vector<Token*> tokens;
     public:
       TokenEquation();
+      ~TokenEquation();
       bool tokenize(string expres);
-      void prefix();
+      bool postfix();
       const void print() const;
-      const vector<Token>* getTokenEquation() const{
+      const vector<Token*> getTokenEquation() const{
         return tokens;
       }
+      Token* getToken(int i);
       const int getLength() const {
-        return length;
+        return tokens.size();
       }
+      void removeUnary();
+      void replace(int i);
 };
 
 #endif

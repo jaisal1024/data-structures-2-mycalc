@@ -1,62 +1,105 @@
 #include <cstdlib>
 #include <iostream>
+#include <cmath>
+#include <sstream>
 using namespace std;
 
 #include "BinaryTree.h"
 
-BinaryTree::BinaryTree()			// constructor
-    : _root(NULL), n(0) { }
 
+BinaryTree::BinaryTree()			// constructor
+    : rootObj(NULL), n(0) { }
+
+
+bool BinaryTree::construct(TokenEquation & eq) {  //construct tree from postfix expression
+  stack<Node*> st;
+  for (int i = 0; i < eq.getLength(); i++) {
+    ++n;
+    if (eq.getToken(i)->getType() == "var" || eq.getToken(i)->getType() == "dig") {  // is an operand
+      st.push(new BinaryTree::Node(*eq.getToken(i)));
+
+    } else if (eq.getToken(i)->getType() == "oper") {
+        Node* ptr;
+        Node node(*eq.getToken(i));
+        ptr = &node;
+        Node* t1 = st.top(); // Store top
+        st.pop();      // Remove top
+        Node* t2 = st.top();
+        st.pop();
+
+        node.right =t1;
+        node.left = t2;
+        // delete t1;
+        // delete t2;
+        st.push(ptr);
+
+    } else
+    //throw error
+    return false;
+  }
+  rootObj = st.top();
+  st.pop();
+
+  return true;
+}
 int BinaryTree::size() const			// number of nodes
     { return n; }
 
 bool BinaryTree::empty() const			// is tree empty?
     { return size() == 0; }
 
-BinaryTree::Position BinaryTree::root() const // get the root
-    { return Position(_root); }
+BinaryTree::Node* BinaryTree::root() const // get the root
+    { return rootObj; }
 
-void BinaryTree::addRoot()	// add root to empty tree
-    { _root = new Node; n = 1; }
-
-void BinaryTree::expandExternal(const Position& p) {
-    Node* v = p.v;					// p's node
-    v->left = new Node;					// add a new left child
-    v->left->par = v;					// v is its parent
-    v->right = new Node;				// and a new right child
-    v->right->par = v;					// v is its parent
-    n += 2;						// two more nodes
-}
-
-BinaryTree::Position				// remove p and parent
-BinaryTree::removeAboveExternal(const Position& p) {
-    Node* w = p.v;  Node* v = w->par;		// get p's node and parent
-    Node* sib = (w == v->left ?  v->right : v->left);
-    if (v == _root) {					// child of root?
-      _root = sib;					// ...make sibling root
-      sib->par = NULL;
+void BinaryTree::addRoot(Token* token){ // add root to empty tree
+      rootObj = new Node(*token);
+      n = 1;
     }
-    else {
-      Node* gpar = v->par;				// w's grandparent
-      if (v == gpar->left) gpar->left = sib; 		// replace parent by sib
-      else gpar->right = sib;
-      sib->par = gpar;
-    }
-    delete w; delete v;					// delete removed nodes
-    n -= 2;						// two fewer nodes
-    return Position(sib);
+double BinaryTree::evaluateOperation(double v1, double v2, string oper) {
+  if (oper == "+")
+    return v1+v2;
+  if (oper == "-")
+    return v1-v2;
+  if (oper == "*")
+    return v1*v2;
+  if (oper == "/")
+    return v1/v2;
+  if (oper == "^")
+    return pow(v1, v2);
+  if (oper == "mod") {
+    int v1temp = int(v1);
+    int v2temp = int(v2);
+    double sol = v2temp%v1temp;
+    return sol;
+  }
+  if (oper == "%"){
+    int v1temp = int(v1);
+    int v2temp = int(v2);
+    double sol = v2temp/v1temp;
+    return sol;
+  }
+  //throw error here
+  return 0;
 }
 
-BinaryTree::PositionList BinaryTree::positions() const {
-  PositionList pl;
-  preorder(_root, pl);					// preorder traversal
-  return PositionList(pl);				// return resulting list
-}
-							// preorder traversal
-void BinaryTree::preorder(Node* v, PositionList& pl) const {
-  pl.push_back(Position(v));				// add this node
+double BinaryTree::evaluate(Node* v) {
+  double leftVal, rightVal;
+  if (size() == 0){
+    return 0.000000000;
+    //throw empty tree error
+  } else if (v->left == NULL && v->right == NULL) { //is a leaf node
+    cout << "THE OTHER SIDE" << endl;
+    if ((*v).elt.getType() == "dig") { //ensure its a digit
+      double temp;
+      istringstream((*v).elt.getValue()) >> temp;
+      return temp;
+    }
+  } else {
   if (v->left != NULL)					// traverse left subtree
-    preorder(v->left, pl);
+    leftVal = evaluate(v->left);
   if (v->right != NULL)					// traverse right subtree
-    preorder(v->right, pl);
+    rightVal = evaluate(v->right);
+  double val = evaluateOperation(leftVal, rightVal, (*v).elt.getValue());
+  return val;
+  }
 }
