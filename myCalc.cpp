@@ -84,7 +84,7 @@ void parseList(vector<ListNode> & list) {
         eq.print();
         if (eq.postfix()) {
           eq.print();
-          list.tree.construct(eq);
+          //list.tree.construct(eq);
         }
 
       } else

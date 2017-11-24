@@ -8,7 +8,11 @@ BinaryTree::BinaryTree()			// constructor
     : _root(NULL), n(0) { }
 
 bool BinaryTree::construct(TokenEquation & eq) {  //construct tree from postfix expression
-
+  stack<Position*> st;
+  Position *node, *left, *right;
+  for (int i = 0; i < eq.length(); i++) {
+    /* code */
+  }
 }
 
 int BinaryTree::size() const			// number of nodes
