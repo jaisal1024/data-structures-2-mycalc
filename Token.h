@@ -120,7 +120,6 @@ class Token {
 class TokenEquation {
     private:
       vector<Token*> tokens;
-      int length;
     public:
       TokenEquation();
       ~TokenEquation();
@@ -131,7 +130,7 @@ class TokenEquation {
         return tokens;
       }
       const int getLength() const {
-        return length;
+        return tokens.size();
       }
       void removeUnary();
 };
