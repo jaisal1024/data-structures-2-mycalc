@@ -69,25 +69,28 @@ bool TokenEquation::tokenize(string expres) {
       int j = 1;
       string identifier = expres.substr(i, j);
       while (j+i < expres.length() && isalpha(character[i+j])) {
-        identifier = expres.substr(i, ++j);
+        j++;
       }
+      identifier = expres.substr(i, j);
+      cout << identifier << endl;
       if (identifier == "mod") {
         if (i!=0) {
           tokens.push_back(new TokenOper("mod", false, 2));
           i++; continue;
         } else {
-          //throw exception - operator at start of method
+          cerr << "Cannot have a binary operator at the start of expression " << endl;
           return false;
         }
       }
       tokens.push_back(new TokenVar(identifier));
-      i++; continue;
+      i+=j; continue;
     } else if (isdigit(character[i])) {
       int j = 1;
       string digits = expres.substr(i, j);
       while (j+i < expres.length() && isdigit(character[i+j])) {
-        digits = expres.substr(i, ++j);
+        j++;
       }
+      digits = expres.substr(i, j);
       tokens.push_back(new TokenDig(digits));
       i+=j; continue;
     } else if (i == 0) {
@@ -156,7 +159,7 @@ bool TokenEquation::tokenize(string expres) {
 void TokenEquation::removeUnary(){
   vector<Token*>::iterator i;
   i = tokens.begin();
-  while (i < tokens.end()) {
+  while (i != tokens.end()) {
     if ((*i)->getType() == "oper") {
       if ((*i)->isUnaryOperator()) {
         if ((*i)->getValue() == "**") {
@@ -165,39 +168,40 @@ void TokenEquation::removeUnary(){
             bool found = false;
             while(((i+j) < tokens.end()) && !found) {
               if ((*(i+j))->getType() == "paren" && !(*(i+j))->isOpenParen()) {
-                tokens.erase(i);
-                tokens.insert(i+j,new TokenDig("2"));
-                tokens.insert(i+j,new TokenOper("^", false, 4));
+                i = tokens.erase(i);
+                i = tokens.insert(i+j,new TokenDig("2"));
+                i = tokens.insert(i+j,new TokenOper("^", false, 4));
                 i++; continue;
               }
               j++;
             }
           } else {
-            tokens.erase(i);
-            tokens.insert(i,new TokenOper("^", false, 4));
-            tokens.insert(i,new TokenDig("2"));
+            i = tokens.erase(i);
+            i = tokens.insert(i,new TokenOper("^", false, 4));
+            i = tokens.insert(i,new TokenDig("2"));
             i+=2; continue;
           }
 
         } else if ((*i)->getValue() == "++") {
-          tokens.erase(i);
-          tokens.insert(i,new TokenOper("+", false, 1));
-          tokens.insert(i,new TokenDig("1"));
+          i = tokens.erase(i);
+          i = tokens.insert(i,new TokenOper("+", false, 1));
+          i = tokens.insert(i,new TokenDig("1"));
           i+=2; continue;
 
         } else if ((*i)->getValue() == "--") {
-          tokens.erase(i);
-          tokens.insert(i,new TokenOper("-", false, 1));
-          tokens.insert(i,new TokenDig("1"));
+          i = tokens.erase(i);
+          i = tokens.insert(i,new TokenOper("-", false, 1));
+          i = tokens.insert(i,new TokenDig("1"));
           i+=2; continue;
         } else { //it's a negatation value
-          tokens.erase(i);
-          tokens.insert(i,new TokenOper("*", false, 2));
-          tokens.insert(i,new TokenDig("-1"));
+          i = tokens.erase(i);
+          i = tokens.insert(i,new TokenOper("*", false, 2));
+          i = tokens.insert(i,new TokenDig("-1"));
           i+=2; continue;
         }
       } i++; continue;
-    } i++; continue;
+    }
+    i++; continue;
   }
 }
 bool TokenEquation::postfix(){

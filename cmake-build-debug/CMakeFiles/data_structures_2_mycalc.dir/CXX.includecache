@@ -1,0 +1,74 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/BinaryTree.cpp
+cstdlib
+-
+iostream
+-
+cmath
+-
+sstream
+-
+BinaryTree.h
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/BinaryTree.h
+
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/BinaryTree.h
+cstdlib
+-
+iostream
+-
+list
+-
+string
+-
+Token.h
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/Token.h
+
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/HelperLibrary.cpp
+HelperLibrary.h
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/HelperLibrary.h
+string
+-
+
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/HelperLibrary.h
+string
+-
+Token.h
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/Token.h
+
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/Token.cpp
+Token.h
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/Token.h
+
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/Token.h
+string
+-
+cstdlib
+-
+vector
+-
+iostream
+-
+HelperLibrary.h
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/HelperLibrary.h
+stack
+-
+
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/myCalc.cpp
+iostream
+-
+fstream
+-
+BinaryTree.h
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/BinaryTree.h
+HelperLibrary.h
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/HelperLibrary.h
+Token.h
+/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/Token.h
+

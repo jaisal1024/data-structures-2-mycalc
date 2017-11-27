@@ -1,0 +1,4 @@
+"/Users/37138/Library/Application Support/JetBrains/Toolbox/apps/CLion/ch-0/172.4343.16/CLion.app/Contents/bin/cmake/bin/cmake" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" "/Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc"
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/37138/Desktop/Google Drive/NYUAD 21/Data Structures/Hw&Projects/project2/myCalc_app/data-structures-2-mycalc/cmake-build-debug
