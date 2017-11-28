@@ -72,13 +72,12 @@ bool TokenEquation::tokenize(string expres) {
         j++;
       }
       identifier = expres.substr(i, j);
-      cout << identifier << endl;
       if (identifier == "mod") {
         if (i!=0) {
           tokens.push_back(new TokenOper("mod", false, 2));
           i++; continue;
         } else {
-          cerr << "Cannot have a binary operator at the start of expression " << endl;
+          cout << "Cannot have a binary operator at the start of expression " << endl;
           return false;
         }
       }
@@ -160,22 +159,26 @@ void TokenEquation::removeUnary(){
   vector<Token*>::iterator i;
   i = tokens.begin();
   while (i != tokens.end()) {
+      cout << (*i)->getValue() << endl;
     if ((*i)->getType() == "oper") {
       if ((*i)->isUnaryOperator()) {
         if ((*i)->getValue() == "**") {
+
           if ((*(i+1))->getType() == "paren" && (*(i+1))->isOpenParen()) {
             int j = 1;
             bool found = false;
             while(((i+j) < tokens.end()) && !found) {
-              if ((*(i+j))->getType() == "paren" && !(*(i+j))->isOpenParen()) {
+                cout << "BREAK" << endl;
+              if ((*(i+j))->getType() == "paren" && !((*(i+j))->isOpenParen())) {
                 i = tokens.erase(i);
-                i = tokens.insert(i+j,new TokenDig("2"));
-                i = tokens.insert(i+j,new TokenOper("^", false, 4));
-                i++; continue;
+                tokens.insert(i+j,new TokenDig("2"));
+                tokens.insert(i+j,new TokenOper("^", false, 4));
+                i++; break;
               }
               j++;
             }
           } else {
+
             i = tokens.erase(i);
             i = tokens.insert(i,new TokenOper("^", false, 4));
             i = tokens.insert(i,new TokenDig("2"));
@@ -244,7 +247,7 @@ bool TokenEquation::postfix(){
   }
   while (!operationStack.empty()) {
     if (operationStack.top()->getType() == "paren") {
-      //throw mismatch paranthesis exception
+      cout << "Mismatched parenthesis in above expression, not loaded into list" << endl;
       return false;
     }
     tokensOutput.push_back(operationStack.top());

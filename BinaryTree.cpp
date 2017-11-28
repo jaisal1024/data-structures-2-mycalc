@@ -32,12 +32,12 @@ bool BinaryTree::construct(TokenEquation & eq) {  //construct tree from postfix 
         st.push(ptr);
         continue;
 
-    } else
-    cerr << "This expression is invalid: " << endl;
-    return false;
+    } else {
+        cout << "\n This expression is invalid: " << endl;
+        return false;
+    }
   }
   rootObj = st.top();
-    cout << rootObj->elt.getValue() << endl;
   st.pop();
 
   return true;
@@ -75,7 +75,7 @@ double BinaryTree::evaluateOperation(double v1, double v2, string oper) {
   if (oper == "%"){
     int v1temp = int(v1);
     int v2temp = int(v2);
-    double sol = v2temp/v1temp;
+    double sol = v1temp/v2temp;
     return sol;
   }
   //throw error here
@@ -83,7 +83,6 @@ double BinaryTree::evaluateOperation(double v1, double v2, string oper) {
 }
 
 double BinaryTree::evaluate(Node* v) {
-    cout << v->elt.getValue() << endl;
   double leftVal, rightVal;
    if (v->left == NULL || v->right == NULL) { //is a leaf node
     if ((*v).elt.getType() == "dig") { //ensure its a digit
@@ -91,7 +90,7 @@ double BinaryTree::evaluate(Node* v) {
       istringstream((*v).elt.getValue()) >> temp;
       return temp;
     }
-      cerr << "NON-DIG Passed" << endl;
+      cout << "NON-DIG Passed" << endl;
   } else {
   if (v->left != NULL)					// traverse left subtree
     leftVal = evaluate(v->left);
