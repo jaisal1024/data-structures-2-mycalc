@@ -13,6 +13,7 @@ struct ListNode { //Define a ListNode structure for the Vector implementation of
     BinaryTree tree;
     double eval;
     bool isEvaluated;
+    bool isValid;
 
     ListNode() //Constructor for ListNode
     {
@@ -21,6 +22,7 @@ struct ListNode { //Define a ListNode structure for the Vector implementation of
         this->tree = BinaryTree();
         this->eval = 0.0;
         this->isEvaluated = false;
+        this->isValid = true;
     }
 };
 
@@ -77,6 +79,7 @@ void readFile(const char *filePath,
 
 void parseList(
         vector<ListNode> &list) { //Function 2: parsing list to tokenize expressions, remove Unary expressions, convert to Postfix, remove variables, construct and evaluate tree
+    vector<TokenEquation*> equas;
     for (int i = 0; i < list.size(); i++) { //for loop through list
         TokenEquation eq = TokenEquation(); //construct TokenEquation
         if (eq.tokenize(list.at(i).expres)) { //if Tokenize is successful
@@ -85,8 +88,8 @@ void parseList(
             cout << "DEBUG" << endl;
             if (eq.postfix()) {
                 eq.print(); //visualize postfix expression
-                bool readyForEval = true;
-                for (int j = 0; j < eq.getLength(); j++) { //front iteration through list to evaluate each tokenized expression to parse out variables
+                bool readyForEval = true, search = true;
+                for (int j = 0; j < eq.getLength() && search; j++) { //front iteration through list to evaluate each tokenized expression to parse out variables
                     if (eq.getToken(j)->getType() == "var") {
                         bool lookStill = true;
                         readyForEval = false;
@@ -99,8 +102,9 @@ void parseList(
                                 lookStill = false;
                             }
                         }
-                        if (!readyForEval) //if a variable is not found break the statement
-                            break;
+                        if (!readyForEval) {//if a variable is not found break the statement
+                            search = false;
+                        }
                     }
                 }
                 if (readyForEval) { //call construct and evaluate only if readyForEval
@@ -110,25 +114,63 @@ void parseList(
                     list.at(i).eval = list.at(i).tree.evaluate(list.at(i).tree.root());
                     cout << "EVALUATION IS : " << list.at(i).eval << endl;
                     list.at(i).isEvaluated = true;
-
-
-                } else { //print out expression that is not working
-                    cout << "The expression: " << list.at(i).var << " = " << list.at(i).expres
-                         << " contains undefined variables" << endl;
-                    vector<ListNode>::iterator it = list.begin();
-
-//                    list.erase(it + i);
-//                    --i;
+                    equas.push_back(&eq);
+                    continue;
                 }
+                equas.push_back(&eq);
+                continue;
             }
         } else {
-            cout << "there's an error in: " << list.at(i).expres << endl;
+            cout << "Tokenization failed - there's an error in: " << list.at(i).expres << endl;
             vector<ListNode>::iterator it = list.begin();
-//            list.erase(it + i);
-//            --i;
+            list.at(i).isValid = false;
         }
+        equas.push_back(&eq);
     }
+
+
+//    for (int i = 0; i < list.size(); ++i) {
+//        cout << equas.size() << endl;
+//        cout << equas.at(i)->getLength() << endl;
+//        if (!list.at(i).isEvaluated && list.at(i).isValid) {
+//            cout << equas.at(i)->getToken(0)->getValue()<< endl;
+//            bool readyForEval = true;
+//            for (int j = 0; j < equas.at(i)->getLength(); j++) { //front iteration through list to evaluate each tokenized expression to parse out variables
+//                if (equas.at(i)->getToken(j)->getType() == "var") {
+//                    cout << "DEBUG" << endl;
+//                    bool lookStill = true;
+//                    readyForEval = false;
+//                    for (int z = 0; z < list.size() && lookStill && list.at(z).isEvaluated; z++) {
+//                        if (list.at(z).var ==
+//                            equas.at(i)->getToken(
+//                                    j)->getVarValue()) { //Found matching variable & replace variable with digit
+//                            equas.at(i)->getToken(j)->setValue(to_string((int) list.at(z).eval));
+//                            equas.at(i)->getToken(j)->setType("dig");
+//                            readyForEval = true;
+//                            lookStill = false;
+//                        }
+//                    }
+//                    if (!readyForEval) //if a variable is not found break the statement
+//                        break;
+//                }
+//            }
+//            if (readyForEval) { //call construct and evaluate only if readyForEval
+//                equas.at(i)->print();
+//                list.at(i).tree.construct(*equas.at(i));
+//                //list.at(i).tree.inOrder(list.at(i).tree.root());
+//                list.at(i).eval = list.at(i).tree.evaluate(list.at(i).tree.root());
+//                cout << "EVALUATION IS : " << list.at(i).eval << endl;
+//                list.at(i).isEvaluated = true;
+//
+//            } else { //print out expression that is not working
+//                cout << "The expression: " << list.at(i).var << " = " << list.at(i).expres
+//                     << " contains undefined variables" << endl;
+//                vector<ListNode>::iterator it = list.begin();
+//            }
+//        }
+//    }
 }
+
 
 void printList(vector<ListNode> const &list) { //Function 3: printing of list
     cout << "\nTHE EVALUATED EXPRESSIONS ARE: " << endl;
@@ -179,7 +221,7 @@ int main(int argc, char const *argv[]) {
         parseList(list);
     }
     catch (...) {
-        cerr << "An error has occurred in parsing each expression, please check your expressions" << endl;
+       // cerr << "An error has occurred in parsing each expression, please check your expressions" << endl;
         return -1;
     }
 

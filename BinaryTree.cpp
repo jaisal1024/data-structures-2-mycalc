@@ -65,7 +65,7 @@ double BinaryTree::evaluateOperation(double v1, double v2, string oper) {
   if (oper == "/")
     return v1/v2;
   if (oper == "^")
-    return pow(v1, v2);
+    return pow(v2, v1);
   if (oper == "mod") {
     int v1temp = int(v1);
     int v2temp = int(v2);
