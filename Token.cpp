@@ -69,25 +69,27 @@ bool TokenEquation::tokenize(string expres) {
       int j = 1;
       string identifier = expres.substr(i, j);
       while (j+i < expres.length() && isalpha(character[i+j])) {
-        identifier = expres.substr(i, ++j);
+        j++;
       }
+      identifier = expres.substr(i, j);
       if (identifier == "mod") {
         if (i!=0) {
           tokens.push_back(new TokenOper("mod", false, 2));
           i++; continue;
         } else {
-          //throw exception - operator at start of method
+          cout << "Cannot have a binary operator at the start of expression " << endl;
           return false;
         }
       }
       tokens.push_back(new TokenVar(identifier));
-      i++; continue;
+      i+=j; continue;
     } else if (isdigit(character[i])) {
       int j = 1;
       string digits = expres.substr(i, j);
       while (j+i < expres.length() && isdigit(character[i+j])) {
-        digits = expres.substr(i, ++j);
+        j++;
       }
+      digits = expres.substr(i, j);
       tokens.push_back(new TokenDig(digits));
       i+=j; continue;
     } else if (i == 0) {
@@ -154,50 +156,65 @@ bool TokenEquation::tokenize(string expres) {
 }
 
 void TokenEquation::removeUnary(){
-  vector<Token*>::iterator i;
-  i = tokens.begin();
-  while (i < tokens.end()) {
-    if ((*i)->getType() == "oper") {
-      if ((*i)->isUnaryOperator()) {
-        if ((*i)->getValue() == "**") {
-          if ((*(i+1))->getType() == "paren" && (*(i+1))->isOpenParen()) {
+  vector<Token*>::iterator iter;
+  int i = 0;
+  while (i < tokens.size()) {
+      cout << tokens.at(i)->getValue() << endl;
+    if (tokens.at(i)->getType() == "oper") {
+      if (tokens.at(i)->isUnaryOperator()) {
+        if (tokens.at(i)->getValue() == "**") {
+          if ((tokens.at(i+1))->getType() == "paren" && (tokens.at(i+1))->isOpenParen()) {
             int j = 1;
             bool found = false;
-            while(((i+j) < tokens.end()) && !found) {
-              if ((*(i+j))->getType() == "paren" && !(*(i+j))->isOpenParen()) {
-                tokens.erase(i);
-                tokens.insert(i+j,new TokenDig("2"));
-                tokens.insert(i+j,new TokenOper("^", false, 4));
-                i++; continue;
+            while(((i+j) < tokens.size()) && !found) {
+              if (tokens.at(i+j)->getType() == "paren" && !((tokens.at(i+j))->isOpenParen())) {
+                  iter = tokens.begin();
+                tokens.erase(i+iter);
+                  iter = tokens.begin();
+                tokens.insert(iter+i+j,new TokenDig("2"));
+                tokens.insert(iter+i+j,new TokenOper("^", false, 4));
+                i++; found = true;
               }
               j++;
             }
+
           } else {
-            tokens.erase(i);
-            tokens.insert(i,new TokenOper("^", false, 4));
-            tokens.insert(i,new TokenDig("2"));
+              iter = tokens.begin();
+              tokens.erase(iter + i);
+              iter = tokens.begin();
+            tokens.insert(iter + i,new TokenOper("^", false, 4));
+            tokens.insert(iter + i,new TokenDig("2"));
             i+=2; continue;
           }
 
-        } else if ((*i)->getValue() == "++") {
-          tokens.erase(i);
-          tokens.insert(i,new TokenOper("+", false, 1));
-          tokens.insert(i,new TokenDig("1"));
+        } else if (tokens.at(i)->getValue() == "++") {
+            iter = tokens.begin();
+          tokens.erase(iter + i);
+            cout << "BREAK" << endl;
+            iter = tokens.begin();
+          tokens.insert(i+iter,new TokenOper("+", false, 1));
+          tokens.insert(i+iter,new TokenDig("1"));
           i+=2; continue;
 
-        } else if ((*i)->getValue() == "--") {
-          tokens.erase(i);
-          tokens.insert(i,new TokenOper("-", false, 1));
-          tokens.insert(i,new TokenDig("1"));
+
+        } else if (tokens.at(i)->getValue() == "--") {
+            iter = tokens.begin();
+          tokens.erase(i+iter);
+            iter = tokens.begin();
+          tokens.insert(i+iter,new TokenOper("-", false, 1));
+          tokens.insert(i+iter,new TokenDig("1"));
           i+=2; continue;
         } else { //it's a negatation value
-          tokens.erase(i);
-          tokens.insert(i,new TokenOper("*", false, 2));
-          tokens.insert(i,new TokenDig("-1"));
+            iter = tokens.begin();
+          tokens.erase(iter+i);
+            iter = tokens.begin();
+          tokens.insert(i+iter,new TokenOper("*", false, 2));
+          tokens.insert(i+iter,new TokenDig("-1"));
           i+=2; continue;
         }
       } i++; continue;
-    } i++; continue;
+    }
+    i++; continue;
   }
 }
 bool TokenEquation::postfix(){
@@ -240,7 +257,7 @@ bool TokenEquation::postfix(){
   }
   while (!operationStack.empty()) {
     if (operationStack.top()->getType() == "paren") {
-      //throw mismatch paranthesis exception
+      cout << "Mismatched parenthesis in above expression, not loaded into list" << endl;
       return false;
     }
     tokensOutput.push_back(operationStack.top());

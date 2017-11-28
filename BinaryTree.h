@@ -13,7 +13,7 @@ class BinaryTree {
   public:
 	struct Node {			// a node of the tree
 		Token  elt;					// element value
-  	Node*   par;					// parent
+  		Node*   par;					// parent
 		Node*   left;					// left child
 		Node*   right;					// right child
 		Node(Token token) : elt(token), par(NULL), left(NULL), right(NULL) { };
@@ -27,8 +27,9 @@ class BinaryTree {
     void addRoot(Token* token);					// add root to empty tree
     bool construct(TokenEquation & eq);
     bool isEvaluated();
+	void inOrder(Node* v);
     double evaluateOperation(double v1, double v2, string val);
-    double evaluate(Node* v);	// evaluate function
+    double evaluate(Node* v );	// evaluate function
   private:
     Node* rootObj;					// pointer to the root
     int n;	                // number of nodes

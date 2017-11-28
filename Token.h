@@ -28,7 +28,9 @@ class Token {
     const string getType() const {
       return type;
     }
-    const virtual void setValue(string valueInput) {};
+    const void setValue(string valueInput) {
+        value = valueInput;
+    };
     const void setType(string typeInput) {
       type = typeInput;
     }
@@ -49,9 +51,9 @@ class Token {
     const virtual string getValue() const {
       return value;
     }
-     const virtual void setValue(string valueInput) {
-      value = valueInput;
-        }
+//     const virtual void setValue(string valueInput) {
+//      value = valueInput;
+//        }
   };
   class TokenVar : public Token {
   protected:
@@ -68,9 +70,9 @@ class Token {
     string getVariableValue() {
       return value;
     }
-    const void setValue(string valueInput){
-      value = valueInput;
-        }
+//    const void setValue(string valueInput){
+//      value = valueInput;
+//        }
   };
   class TokenOper : public Token {
   protected:

@@ -1,6 +1,6 @@
 output: myCalc.o BinaryTree.o HelperLibrary.o Token.o
 	g++ myCalc.o BinaryTree.o HelperLibrary.o Token.o -o output
-	./output -i file1.txt
+	./output -i file2.txt
 
 myCalc.o: myCalc.cpp
 	g++ -c myCalc.cpp
