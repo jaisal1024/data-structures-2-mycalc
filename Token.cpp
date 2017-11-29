@@ -75,7 +75,7 @@ bool TokenEquation::tokenize(string expres) {
       if (identifier == "mod") {
         if (i!=0) {
           tokens.push_back(new TokenOper("mod", false, 2));
-          i++; continue;
+          i+=j; continue;
         } else {
           cout << "Cannot have a binary operator at the start of expression " << endl;
           return false;
@@ -159,7 +159,6 @@ void TokenEquation::removeUnary(){
   vector<Token*>::iterator iter;
   int i = 0;
   while (i < tokens.size()) {
-      cout << tokens.at(i)->getValue() << endl;
     if (tokens.at(i)->getType() == "oper") {
       if (tokens.at(i)->isUnaryOperator()) {
         if (tokens.at(i)->getValue() == "**") {
@@ -190,7 +189,6 @@ void TokenEquation::removeUnary(){
         } else if (tokens.at(i)->getValue() == "++") {
             iter = tokens.begin();
           tokens.erase(iter + i);
-            cout << "BREAK" << endl;
             iter = tokens.begin();
           tokens.insert(i+iter,new TokenOper("+", false, 1));
           tokens.insert(i+iter,new TokenDig("1"));

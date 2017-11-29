@@ -11,15 +11,15 @@ BinaryTree::BinaryTree()			// constructor
     : rootObj(NULL), n(0) { }
 
 
-bool BinaryTree::construct(TokenEquation & eq) {  //construct tree from postfix expression
+bool BinaryTree::construct(TokenEquation* eq) {  //construct tree from postfix expression
   stack<Node*> st;
-  for (int i = 0; i < eq.getLength(); i++) {
+  for (int i = 0; i < eq->getLength(); i++) {
       ++n;
-    if (eq.getToken(i)->getType() == "dig") {  // is an operand
-      st.push(new Node(*eq.getToken(i)));
+    if (eq->getToken(i)->getType() == "dig") {  // is an operand
+      st.push(new Node(*eq->getToken(i)));
         continue;
-    } else if (eq.getToken(i)->getType() == "oper") {
-        Node* ptr = new Node(*eq.getToken(i));
+    } else if (eq->getToken(i)->getType() == "oper") {
+        Node* ptr = new Node(*(eq->getToken(i)));
         Node* t1 = st.top(); // Store top
         st.pop();      // Remove top
         Node* t2 = st.top();
@@ -90,7 +90,6 @@ double BinaryTree::evaluate(Node* v) {
       istringstream((*v).elt.getValue()) >> temp;
       return temp;
     }
-      cout << "NON-DIG Passed" << endl;
   } else {
   if (v->left != NULL)					// traverse left subtree
     leftVal = evaluate(v->left);
