@@ -90,7 +90,6 @@ double BinaryTree::evaluate(Node* v) {
       istringstream((*v).elt.getValue()) >> temp;
       return temp;
     }
-      cout << "NON-DIG Passed" << endl;
   } else {
   if (v->left != NULL)					// traverse left subtree
     leftVal = evaluate(v->left);

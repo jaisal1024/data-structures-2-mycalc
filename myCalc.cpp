@@ -41,9 +41,9 @@ void readFile(const char *filePath,
             WhiteSpace::trim(input); //call trim function which rids of white space
             const char *temp = input.substr(input.length() - 1, 1).c_str(); //cast to char array
             if (temp[0] != ';') { //check termination clauses
-                cout << "Expression terminated: " << input
+                cout << "\nExpression terminated: " << input
                      << " - each infix expression in the input text file must terminate with a semi-colon " << endl;
-                continue;
+                node.isValid = false;
             }
             for (int i = 0; i < input.length(); i++) {
                 const char *tempLoop = input.substr(i, 1).c_str();
@@ -62,32 +62,32 @@ void readFile(const char *filePath,
                 }
             }
             if (openBrace != closeBrace) {
-                cout << "Expression terminated: " << input << " - must be properly paranthesized" << endl;
-                continue;
+                cout << "\nExpression terminated: " << input << " - must be properly paranthesized" << endl;
+                node.isValid = false;
             }
             if (!equalFound) {
-                cout << "Expression terminated: " << input << " - must contain an equals expression" << endl;
-                continue;
+                cout << "\nExpression terminated: " << input << " - must contain an equals expression" << endl;
+                node.isValid = false;
             }
 
             list.push_back(node);
         }
     }
     textFile.close();
-    cout << "File successfully loaded into program" << endl;
+    cout << "\nFile successfully loaded into program" << endl;
 }
 
 void parseList(
         vector<ListNode> &list) { //Function 2: parsing list to tokenize expressions, remove Unary expressions, convert to Postfix, remove variables, construct and evaluate tree
     vector<TokenEquation*> equas;
     for (int i = 0; i < list.size(); i++) { //for loop through list
+        if (!list.at(i).isValid)
+            continue;
         TokenEquation* eq = new TokenEquation(); //construct TokenEquation
         if (eq->tokenize(list.at(i).expres)) { //if Tokenize is successful
-            cout << "\n START LINE : " << i+1 << endl;
             eq->removeUnary(); //invoke removeUnary
-            cout << "DEBUG" << endl;
             if (eq->postfix()) {
-                eq->print(); //visualize postfix expression
+//                eq->print(); //visualize postfix expression
                 bool readyForEval = true, search = true;
                 for (int j = 0; j < eq->getLength() && search; j++) { //front iteration through list to evaluate each tokenized expression to parse out variables
                     if (eq->getToken(j)->getType() == "var") {
@@ -108,11 +108,10 @@ void parseList(
                     }
                 }
                 if (readyForEval) { //call construct and evaluate only if readyForEval
-                    eq->print();
+//                    eq->print();
                     list.at(i).tree.construct(eq);
                     //list.at(i).tree.inOrder(list.at(i).tree.root());
                     list.at(i).eval = list.at(i).tree.evaluate(list.at(i).tree.root());
-                    cout << "EVALUATION IS : " << list.at(i).eval << endl;
                     list.at(i).isEvaluated = true;
                     equas.push_back(eq);
                     continue;
@@ -132,14 +131,12 @@ void parseList(
     for (int i = 0; i < list.size(); ++i) {
         if (!list.at(i).isEvaluated && list.at(i).isValid) {
             bool readyForEval = true;
-            equas.at(i)->print();
+//            equas.at(i)->print();
             for (int j = 0; j < equas.at(i)->getLength(); j++) { //front iteration through list to evaluate each tokenized expression to parse out variables
                 if (equas.at(i)->getToken(j)->getType() == "var") {
-                    cout << "DEBUG" << endl;
                     bool lookStill = true;
                     readyForEval = false;
                     for (int z = 0; z < list.size() && lookStill; z++) {
-                        cout << equas.at(i)->getToken(j)->getVarValue() << endl;
                         if (list.at(z).isEvaluated && list.at(z).var == equas.at(i)->getToken(j)->getVarValue()) { //Found matching variable & replace variable with digit
                             equas.at(i)->getToken(j)->setValue(to_string((int) list.at(z).eval));
                             equas.at(i)->getToken(j)->setType("dig");
@@ -152,15 +149,15 @@ void parseList(
                 }
             }
             if (readyForEval) { //call construct and evaluate only if readyForEval
-                equas.at(i)->print();
+//                equas.at(i)->print();
                 list.at(i).tree.construct(equas.at(i));
                 //list.at(i).tree.inOrder(list.at(i).tree.root());
                 list.at(i).eval = list.at(i).tree.evaluate(list.at(i).tree.root());
-                cout << "EVALUATION IS : " << list.at(i).eval << endl;
+//                cout << "EVALUATION IS : " << list.at(i).eval << endl;
                 list.at(i).isEvaluated = true;
 
             } else { //print out expression that is not working
-                cout << "The expression: " << list.at(i).var << " = " << list.at(i).expres
+                cout << "\nThe expression: " << list.at(i).var << " = " << list.at(i).expres
                      << " contains undefined variables" << endl;
                 vector<ListNode>::iterator it = list.begin();
             }
