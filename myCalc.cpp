@@ -81,23 +81,23 @@ void parseList(
         vector<ListNode> &list) { //Function 2: parsing list to tokenize expressions, remove Unary expressions, convert to Postfix, remove variables, construct and evaluate tree
     vector<TokenEquation*> equas;
     for (int i = 0; i < list.size(); i++) { //for loop through list
-        TokenEquation eq = TokenEquation(); //construct TokenEquation
-        if (eq.tokenize(list.at(i).expres)) { //if Tokenize is successful
+        TokenEquation* eq = new TokenEquation(); //construct TokenEquation
+        if (eq->tokenize(list.at(i).expres)) { //if Tokenize is successful
             cout << "\n START LINE : " << i+1 << endl;
-            eq.removeUnary(); //invoke removeUnary
+            eq->removeUnary(); //invoke removeUnary
             cout << "DEBUG" << endl;
-            if (eq.postfix()) {
-                eq.print(); //visualize postfix expression
+            if (eq->postfix()) {
+                eq->print(); //visualize postfix expression
                 bool readyForEval = true, search = true;
-                for (int j = 0; j < eq.getLength() && search; j++) { //front iteration through list to evaluate each tokenized expression to parse out variables
-                    if (eq.getToken(j)->getType() == "var") {
+                for (int j = 0; j < eq->getLength() && search; j++) { //front iteration through list to evaluate each tokenized expression to parse out variables
+                    if (eq->getToken(j)->getType() == "var") {
                         bool lookStill = true;
                         readyForEval = false;
                         for (int z = 0; z < i && lookStill && list.at(z).isEvaluated; z++) {
                             if (list.at(z).var ==
-                                eq.getToken(j)->getVarValue()) { //Found matching variable & replace variable with digit
-                                eq.getToken(j)->setValue(to_string((int) list.at(z).eval));
-                                eq.getToken(j)->setType("dig");
+                                eq->getToken(j)->getVarValue()) { //Found matching variable & replace variable with digit
+                                eq->getToken(j)->setValue(to_string((int) list.at(z).eval));
+                                eq->getToken(j)->setType("dig");
                                 readyForEval = true;
                                 lookStill = false;
                             }
@@ -108,16 +108,16 @@ void parseList(
                     }
                 }
                 if (readyForEval) { //call construct and evaluate only if readyForEval
-                    eq.print();
+                    eq->print();
                     list.at(i).tree.construct(eq);
                     //list.at(i).tree.inOrder(list.at(i).tree.root());
                     list.at(i).eval = list.at(i).tree.evaluate(list.at(i).tree.root());
                     cout << "EVALUATION IS : " << list.at(i).eval << endl;
                     list.at(i).isEvaluated = true;
-                    equas.push_back(&eq);
+                    equas.push_back(eq);
                     continue;
                 }
-                equas.push_back(&eq);
+                equas.push_back(eq);
                 continue;
             }
         } else {
@@ -125,50 +125,47 @@ void parseList(
             vector<ListNode>::iterator it = list.begin();
             list.at(i).isValid = false;
         }
-        equas.push_back(&eq);
+        equas.push_back(eq);
     }
 
 
-//    for (int i = 0; i < list.size(); ++i) {
-//        cout << equas.size() << endl;
-//        cout << equas.at(i)->getLength() << endl;
-//        if (!list.at(i).isEvaluated && list.at(i).isValid) {
-//            cout << equas.at(i)->getToken(0)->getValue()<< endl;
-//            bool readyForEval = true;
-//            for (int j = 0; j < equas.at(i)->getLength(); j++) { //front iteration through list to evaluate each tokenized expression to parse out variables
-//                if (equas.at(i)->getToken(j)->getType() == "var") {
-//                    cout << "DEBUG" << endl;
-//                    bool lookStill = true;
-//                    readyForEval = false;
-//                    for (int z = 0; z < list.size() && lookStill && list.at(z).isEvaluated; z++) {
-//                        if (list.at(z).var ==
-//                            equas.at(i)->getToken(
-//                                    j)->getVarValue()) { //Found matching variable & replace variable with digit
-//                            equas.at(i)->getToken(j)->setValue(to_string((int) list.at(z).eval));
-//                            equas.at(i)->getToken(j)->setType("dig");
-//                            readyForEval = true;
-//                            lookStill = false;
-//                        }
-//                    }
-//                    if (!readyForEval) //if a variable is not found break the statement
-//                        break;
-//                }
-//            }
-//            if (readyForEval) { //call construct and evaluate only if readyForEval
-//                equas.at(i)->print();
-//                list.at(i).tree.construct(*equas.at(i));
-//                //list.at(i).tree.inOrder(list.at(i).tree.root());
-//                list.at(i).eval = list.at(i).tree.evaluate(list.at(i).tree.root());
-//                cout << "EVALUATION IS : " << list.at(i).eval << endl;
-//                list.at(i).isEvaluated = true;
-//
-//            } else { //print out expression that is not working
-//                cout << "The expression: " << list.at(i).var << " = " << list.at(i).expres
-//                     << " contains undefined variables" << endl;
-//                vector<ListNode>::iterator it = list.begin();
-//            }
-//        }
-//    }
+    for (int i = 0; i < list.size(); ++i) {
+        if (!list.at(i).isEvaluated && list.at(i).isValid) {
+            bool readyForEval = true;
+            equas.at(i)->print();
+            for (int j = 0; j < equas.at(i)->getLength(); j++) { //front iteration through list to evaluate each tokenized expression to parse out variables
+                if (equas.at(i)->getToken(j)->getType() == "var") {
+                    cout << "DEBUG" << endl;
+                    bool lookStill = true;
+                    readyForEval = false;
+                    for (int z = 0; z < list.size() && lookStill; z++) {
+                        cout << equas.at(i)->getToken(j)->getVarValue() << endl;
+                        if (list.at(z).isEvaluated && list.at(z).var == equas.at(i)->getToken(j)->getVarValue()) { //Found matching variable & replace variable with digit
+                            equas.at(i)->getToken(j)->setValue(to_string((int) list.at(z).eval));
+                            equas.at(i)->getToken(j)->setType("dig");
+                            readyForEval = true;
+                            lookStill = false;
+                        }
+                    }
+                    if (!readyForEval) //if a variable is not found break the statement
+                        break;
+                }
+            }
+            if (readyForEval) { //call construct and evaluate only if readyForEval
+                equas.at(i)->print();
+                list.at(i).tree.construct(equas.at(i));
+                //list.at(i).tree.inOrder(list.at(i).tree.root());
+                list.at(i).eval = list.at(i).tree.evaluate(list.at(i).tree.root());
+                cout << "EVALUATION IS : " << list.at(i).eval << endl;
+                list.at(i).isEvaluated = true;
+
+            } else { //print out expression that is not working
+                cout << "The expression: " << list.at(i).var << " = " << list.at(i).expres
+                     << " contains undefined variables" << endl;
+                vector<ListNode>::iterator it = list.begin();
+            }
+        }
+    }
 }
 
 

@@ -25,7 +25,7 @@ class BinaryTree {
     bool empty() const;					// is tree empty?
     Node* root() const;				// get the root
     void addRoot(Token* token);					// add root to empty tree
-    bool construct(TokenEquation & eq);
+    bool construct(TokenEquation* eq);
     bool isEvaluated();
 	void inOrder(Node* v);
     double evaluateOperation(double v1, double v2, string val);
